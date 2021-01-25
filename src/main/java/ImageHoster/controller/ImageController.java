@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
@@ -46,8 +47,10 @@ public class ImageController {
     //Here a list of tags is added in the Model type object
     //this list is then sent to 'images/image.html' file and the tags are displayed
     @RequestMapping("/images/{id}/{title}")
-    public String showImage(@PathVariable("id") Integer id, @PathVariable("title") String title, Model model) {
+    public String showImage(@PathVariable("id") Integer id, @PathVariable("title") String title,Model model) {
         Image image = imageService.getImage(id);
+
+        model.addAttribute("comments", image.getComments());
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
         return "images/image";
@@ -96,7 +99,7 @@ public class ImageController {
         Image image = imageService.getImage(imageId);
 
         //Check if user was owner or not, Edit only if user was a owner.
-        if (isImageOwner(imageId, session)) {
+        if(isImageOwner(imageId, session)) {
             String tags = convertTagsToString(image.getTags());
             model.addAttribute("image", image);
             model.addAttribute("tags", tags);
